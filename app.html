@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI-Based Fake Review Detection System</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 40px auto;
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        h1 {
+            color: #222;
+            margin-bottom: 10px;
+            font-size: 30px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+
+        .developers {
+            background: #f1f3f8;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        .developers strong {
+            color: #222;
+        }
+
+        textarea {
+            width: 100%;
+            height: 160px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            resize: none;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: #667eea;
+        }
+
+        .buttons {
+            margin-top: 18px;
+        }
+
+        button {
+            padding: 13px 28px;
+            margin: 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .check-btn {
+            background: #222;
+            color: white;
+        }
+
+        .check-btn:hover {
+            background: #444;
+        }
+
+        .clear-btn {
+            background: #ddd;
+            color: #222;
+        }
+
+        .clear-btn:hover {
+            background: #ccc;
+        }
+
+        #result {
+            display: none;
+            margin-top: 25px;
+            padding: 22px;
+            border-radius: 14px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .original {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 2px solid #81c784;
+        }
+
+        .fake {
+            background: #ffebee;
+            color: #c62828;
+            border: 2px solid #e57373;
+        }
+
+        .confidence {
+            margin-top: 10px;
+            font-size: 17px;
+            font-weight: normal;
+        }
+
+        .about {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fc;
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .about h2 {
+            margin-top: 0;
+            color: #222;
+        }
+
+        .about p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                margin: 15px auto;
+                padding: 22px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            textarea {
+                height: 140px;
+            }
+
+            button {
+                width: 90%;
+                margin: 6px auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>AI-Based Fake Review Detection System</h1>
+
+    <p class="subtitle">
+        Detect potentially fake reviews using Artificial Intelligence
+    </p>
+
+    <div class="developers">
+        <strong>Developed By</strong>
+        <br><br>
+        Nisha • Preeti • Nageshwari • Sneha
+    </div>
+
+    <textarea id="review"
+        placeholder="Enter your product review here..."></textarea>
+
+    <div class="buttons">
+
+        <button class="check-btn" onclick="checkReview()">
+            🔍 Check Review
+        </button>
+
+        <button class="clear-btn" onclick="clearReview()">
+            🧹 Clear
+        </button>
+
+    </div>
+
+    <div id="result"></div>
+
+    <div class="about">
+
+        <h2>About the Project</h2>
+
+        <p>
+            This project uses Machine Learning and Natural Language Processing
+            to analyze product reviews and classify them as likely original
+            or potentially fake.
+        </p>
+
+        <p>
+            The system uses TF-IDF for text feature extraction and a
+            Support Vector Machine (SVM) classifier for prediction.
+        </p>
+
+    </div>
+
+    <div class="footer">
+        College Major Project • 2026
+    </div>
+
+</div>
+
+<script>
+
+async function checkReview() {
+
+    let review = document.getElementById("review").value;
+    let result = document.getElementById("result");
+
+    if (review.trim() === "") {
+
+        result.style.display = "block";
+        result.className = "fake";
+        result.innerHTML = "⚠️ Please enter a review.";
+
+        return;
+    }
+
+    result.style.display = "block";
+    result.className = "";
+    result.innerHTML = "⏳ Analyzing review...";
+
+    try {
+
+        const response = await fetch("/predict", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                review: review
+            })
+
+        });
+
+        const data = await response.json();
+
+        if (data.prediction) {
+
+            if (data.prediction === "Potentially Fake Review") {
+
+                result.className = "fake";
+
+                result.innerHTML =
+                    "🔴 " + data.prediction +
+                    "<div class='confidence'>" +
+                    "Confidence: " + data.confidence + "%" +
+                    "</div>";
+
+            } else {
+
+                result.className = "original";
+
+                result.innerHTML =
+                    "🟢 " + data.prediction +
+                    "<div class='confidence'>" +
+                    "Confidence: " + data.confidence + "%" +
+                    "</div>";
+            }
+
+        } else {
+
+            result.className = "fake";
+            result.innerHTML = "Error: " + data.error;
+
+        }
+
+    } catch (error) {
+
+        result.className = "fake";
+
+        result.innerHTML =
+            "⚠️ Unable to connect to AI server.";
+
+    }
+}
+
+
+function clearReview() {
+
+    document.getElementById("review").value = "";
+
+    let result = document.getElementById("result");
+
+    result.style.display = "none";
+    result.innerHTML = "";
+
+}
+
+</script>
+
+</body>
+</html>
