@@ -4,4 +4,4 @@ scikit-learn
 joblib
 numpy
 scipy
-gunic0rn
+gunicorn
