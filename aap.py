@@ -7,8 +7,8 @@ app = Flask(__name__)
 CORS(app)
 
 # Load improved AI model and TF-IDF vectorizer
-model = joblib.load("improved_svm_model.pkl")
-tfidf = joblib.load("improved_tfidf_vectorizer.pkl")
+model = joblib.load("char_svm_model.pkl")
+tfidf = joblib.load("char_tfidf_vectorizer.pkl")
 
 
 @app.route("/")
